@@ -119,21 +119,6 @@ function cleanScrapeResult(result) {
 }
 
 // gql helpers
-const callGQL = (query, variables = {}) =>
-  fetch(env.STASH_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'ApiKey': env.STASH_API_KEY || ""
-    },
-    body: JSON.stringify({ query, variables })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data?.errors) { throw new Error(`GQL Error: ${JSON.stringify(data?.errors)}`) }
-      return data.data
-    })
-
 const getJobStatus = async (jobId) =>
   callGQL(`query ($id: ID!) {
     findJob(input: { id: $id }) {
@@ -257,6 +242,21 @@ async function scraperSearch(url) {
 export default {
   async fetch(request, env, ctx) {
     // helpers
+    const callGQL = (query, variables = {}) =>
+      fetch(env.STASH_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ApiKey': env.STASH_API_KEY || ""
+        },
+        body: JSON.stringify({ query, variables })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.errors) { throw new Error(`GQL Error: ${JSON.stringify(data?.errors)}`) }
+          return data.data
+        })
+
     const checkUpdatePackages = async (force = false) => {
       const lastUpdate = await env.KV_CONFIG.get("scraperLastUpdate")
       // check if key exists
