@@ -322,12 +322,12 @@ export default {
         })
       }
       // check authentication
-      // if (body.auth !== env.AUTH_KEY) {
-      //   return new Response('Unauthorized', {
-      //     status: 401,
-      //     headers: { 'Content-Type': 'text/plain' }
-      //   })
-      // }
+      if (body.auth !== env.AUTH_KEY) {
+        return new Response('Unauthorized', {
+          status: 401,
+          headers: { 'Content-Type': 'text/plain' }
+        })
+      }
       // validate scrapeType
       const validScrapeTypes = ['performer', 'scene', 'gallery', 'image', 'group']
       console.log(`Scrape type: ${body.scrapeType}`)
