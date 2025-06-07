@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="./assets/index.css">
+</head>
+
+<body>
+  <nav class="px-4 navbar navbar-expand navbar-dark bg-dark">
+    <div class="d-flex flex-column">
+      <span class="nav-link"><strong>ID: </strong><a id="job-id">/view/</a></span>
+      <span class="nav-link"><strong>Type: </strong><span id="scrape-type">scene</span></span>
+    </div>
+    <div class="d-flex flex-column ms-auto">
+      <span class="nav-link"><strong>URL: </strong><a id="scrape-url">https://example.com/scene</a></span>
+      <span class="nav-link"><strong>Scraper ID: </strong><span id="scrape-id">no-id</span><span id="scraper-hash" class="text-muted"> (000000)</span></span>
+    </div>
+    <div class="d-flex flex-column ms-auto">
+      <span><strong>Runner: </strong><span id="runner-version"></span><span id="runner-hash" class="text-muted"></span></span>
+      <span class="nav-link"><strong>Date: </strong><span id="runner-date"></span></span>
+    </div>
+  </nav>
+  <div class="NarrowPage">
+    <div id="error-box" class="card hidden">
+      <div class="card-header">
+        <h3>Error</h3>
+      </div>
+      <div class="card-body">
+        <p id="error-text" class="error-message">An unspecified error occurred.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+          <svg id="gender-svg" style="height: 1em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path id="gender-path" d="M192 144a112 112 0 1 1 0 224 112 112 0 1 1 0-224zm0 288a176 176 0 1 0 0-352 176 176 0 1 0 0 352z"/></svg>
+          <span id="result-name">John Doe</span>
+        </h3>
+      </div>
+      <div class="p-0 card-body">
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <td>Career</td>
+              <td id="result-career_length"></td>
+            </tr>
+            <tr>
+              <td>Birthdate</td>
+              <td id="result-birthdate">0000-00-00</td>
+            </tr>
+            <tr>
+              <td>Height</td>
+              <td id="result-height">0cm</td>
+            </tr>
+            <tr>
+              <td>Weight</td>
+              <td id="result-weight">0cm</td>
+            </tr>
+            <!-- female only -->
+            <div id="female-only">
+              <tr>
+                <td>Measurements</td>
+                <td id="result-measurements">00A-00-00</td>
+              </tr>
+              <tr>
+                <td>Fake tits</td>
+                <td id="result-fake_tits">null</td>
+              </tr>
+            </div>
+            <!-- male only -->
+            <div id="male-only">
+              <tr>
+                <td>Circumcised</td>
+                <td id="result-circumcised">null</td>
+              </tr>
+              <tr>
+                <td>Penis Length</td>
+                <td id="result-penis_length">null</td>
+              </tr>
+            </div>
+            <tr>
+              <td>Nationality</td>
+              <td id="result-country">null</td>
+            </tr>
+            <tr>
+              <td>Ethnicity</td>
+              <td id="result-ethnicity">null</td>
+            </tr>
+            <tr>
+              <td>Eye color</td>
+              <td id="result-eye_color">null</td>
+            </tr>
+            <tr>
+              <td>Hair color</td>
+              <td id="result-hair_color">null</td>
+            </tr>
+            <tr>
+              <td>Tattoos</td>
+              <td id="result-tattoos">null</td>
+            </tr>
+            <tr>
+              <td>Piercings</td>
+              <td id="result-piercings">null</td>
+            </tr>
+            <tr>
+              <td>Aliases</td>
+              <td id="result-aliases">null</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="scene-tabs-tabpane-description" class="my-4">
+      <div class="scene-description"><h4>Details:</h4><div id="result-details">Details</div></div>
+    </div>
+    <div class="scene-tags">
+      <h6>Tags:</h6>
+      <span id="tag-placeholder" class="text-muted">No tags</span>
+      <ul id="tag-list" class="scene-tag-list"></ul>
+    </div>
+    <br>
+    <div id="result-urls">
+      <h6>URLs:</h6>
+      <span id="url-placeholder" class="text-muted">No URLs</span>
+      <ul id="url-list"></ul>
+    </div>
+    <br>
+    <h6>Logs:</h6>
+    <div id="logs" class="logs"></div>
+  </div>
+  <script src="./assets/replace.js"></script>
+  <script src="./assets/shared.js"></script>
+  <script src="./assets/performer.js"></script>
+  <script src="./assets/init.js"></script>
+</body>

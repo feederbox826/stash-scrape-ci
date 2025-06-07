@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "stash-scrape-ci",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-07",
+  "kv_namespaces": [
+    {
+      "binding": "KV_RESULTS",
+      "id": "f59568763cb547bbbccbfab3eb65d0b4"
+    },
+    {
+      "binding": "KV_CONFIG",
+      "id": "bb59f35fbba641bb9dc39f214e21b8f8"
+    }
+  ],
+  "assets": {
+    "directory": "public",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}
