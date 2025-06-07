@@ -74,174 +74,54 @@ const groupQuery = `query ($url: String!) {
     studio { name } tags { name }
   }}`
 
-// external helpers
-// short-unique-id
-const genID = (len = 8) => {
-  const SYMBOLS = '346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz'
-  let result = ''
-  for (let i = 0; i < len; i++) result += SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
-  return result
-}
-
-async function searchScrapers(url) {
-  // fetch communityScrapers
-  const communityScrapers = await fetch("https://stashapp.github.io/CommunityScrapers/assets/scrapers.json")
-    .then(res => res.json())
-  // find scrapers that match URL
-  const matchedScrapers = communityScrapers.filter(scraper =>
-    scraper.sites.some(pattern => url.includes(pattern))
-  )
-  // return scraper id from filename
-  return matchedScrapers.map(scraper => scraper.filename.replace('../scrapers/', '').replace('.yml', '').split("/")[0])
-}
-
-function cleanScrapeResult(result) {
-  const cleaned = {}
-  for (const [key, value] of Object.entries(result)) {
-    if (value == null) cleaned[key] = null
-    else if (typeof value == 'string') cleaned[key] = value
-    else if (Array.isArray(value)) {
-      // if array of objects, map name out, otherwise leave intact
-      if (typeof value[0] == 'string') {
-        // leave as is
-        cleaned[key] = value
-      } else if (typeof value[0] === 'object') {
-        // if array of objects, map name out
-        cleaned[key] = value.map(item => item?.name)
-      }
-    }
-    else if (value?.name) {
-      // if object with name, just return name
-      cleaned[key] = value.name
-    }
-  }
-  return cleaned
-}
-
-// gql helpers
-const getJobStatus = async (jobId) =>
-  callGQL(`query ($id: ID!) {
-    findJob(input: { id: $id }) {
-      status
-    }}`, { id: jobId })
-
-const awaitJobFinished = async (jobId) =>
-  new Promise((resolve, reject) => {
-    const interval = setInterval(async () => {
-      const status = await getJobStatus(jobId)
-        .then(data => data.findJob?.status)
-      console.log(`Job status: ${status}`)
-      if (status === 'FINISHED') {
-        clearInterval(interval)
-        resolve(true)
-      } else if (status === 'FAILED') {
-        clearInterval(interval)
-        reject(new Error('Job failed'))
-      }
-    }, 100)
-  })
-
-const installPackage = (id) => callGQL(`mutation ($id: String!) {
-  installPackages(
-    packages: {
-      id: $id,
-      sourceURL: "https://stashapp.github.io/CommunityScrapers/stable/index.yml"
-    } type: Scraper
-  )}`, { id })
-
-const updateScrapers = async () =>
-  callGQL('mutation { updatePackages(type: Scraper) }')
-    .then(data => data.updatePackages)
-
-const getStashInfo = async () => callGQL(`
-  query { installedPackages(type: Scraper) {
-    package_id version date
-  } version {
-    version hash
-  }}`)
-
-const getLogs = async (startTime) => callGQL(`{ logs { time level message } }`)
-  .then(data => data.logs.reverse()) // reverse to get latest first
-  .then(logs => logs.filter(log => new Date(log.time) >= startTime - 2000)) // filter logs after start time
-
-// runners
-async function scrape(url, scrapeType) {
-  const queryMap = new Map([
-    ['performer', performerQuery],
-    ['scene', sceneQuery],
-    ['gallery', galleryQuery],
-    ['image', imageQuery],
-    ['group', groupQuery],
-  ])
-  // catch unknown scrape type
-  if (!queryMap.has(scrapeType)) {
-    throw new Error(`Unknown scrape type: ${scrapeType}`)
-  }
-  const queryString = queryMap.get(scrapeType)
-  return callGQL(queryString, { url })
-    .then(data => cleanScrapeResult(data[Object.keys(data)[0]]))
-}
-
-async function startScrape(url, scrapeType) {
-  const stashInfo = await getStashInfo()
-  let error, result
-  try {
-    result = await scrape(url, scrapeType)
-  } catch (err) {
-    error = err.message
-    console.error(`Error during scrape: ${err.message}`)
-  }
-  return {
-    result,
-    error,
-    runnerInfo: {
-      url,
-      scrapeType,
-      date: new Date().toISOString(),
-    },
-    stashInfo
-  }
-}
-
-// handle url scrapersearch
-async function scraperSearch(url) {
-  // search in CommunityScrapers
-  const matchedScrapers = await searchScrapers(url)
-  // if no results, return empty array
-  if (matchedScrapers.length === 0) return { "error": "No scrapers found for the provided URL." }
-  // check for existing scrapers
-  const existingScrapers = await callGQL(`query {
-    installedPackages(type: Scraper) { package_id }
-  }`).then(data => data.installedPackages.map(pkg => pkg.package_id))
-  // check against IDs
-  const hasExistingScrapers = matchedScrapers.filter(scraper => existingScrapers.includes(scraper))
-  // if no existing and only one matched, install it
-  if (hasExistingScrapers.length === 0 && matchedScrapers.length === 1) {
-    const scraperId = matchedScrapers[0]
-    console.log(`Installing scraper: ${scraperId}`)
-    return installPackage(scraperId)
-      .then(data => data.installPackages)
-      .then(jobId => awaitJobFinished(jobId))
-      .then(() => ({
-        success: `Scraper ${scraperId} installed successfully.`,
-        id: scraperId
-      }))
-  } else if (matchedScrapers.length > 1 && hasExistingScrapers.length === 0) {
-    // if multiple, don't install
-    return { "error": "Multiple scrapers found for the provided URL. Cowardly refusing to install." }
-  } else if (hasExistingScrapers.length == 1) {
-    // if one existing, return success
-    return {
-      success: `Scraper ${hasExistingScrapers[0]} already installed.`,
-      id: hasExistingScrapers[0]
-    }
-  }
-}
-
 // main export
 export default {
   async fetch(request, env, ctx) {
-    // helpers
+    // external helpers
+    // short-unique-id
+    const genID = (len = 8) => {
+      const SYMBOLS = '346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz'
+      let result = ''
+      for (let i = 0; i < len; i++) result += SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
+      return result
+    }
+
+    async function searchScrapers(url) {
+      // fetch communityScrapers
+      const communityScrapers = await fetch("https://stashapp.github.io/CommunityScrapers/assets/scrapers.json")
+        .then(res => res.json())
+      // find scrapers that match URL
+      const matchedScrapers = communityScrapers.filter(scraper =>
+        scraper.sites.some(pattern => url.includes(pattern))
+      )
+      // return scraper id from filename
+      return matchedScrapers.map(scraper => scraper.filename.replace('../scrapers/', '').replace('.yml', '').split("/")[0])
+    }
+
+    function cleanScrapeResult(result) {
+      const cleaned = {}
+      for (const [key, value] of Object.entries(result)) {
+        if (value == null) cleaned[key] = null
+        else if (typeof value == 'string') cleaned[key] = value
+        else if (Array.isArray(value)) {
+          // if array of objects, map name out, otherwise leave intact
+          if (typeof value[0] == 'string') {
+            // leave as is
+            cleaned[key] = value
+          } else if (typeof value[0] === 'object') {
+            // if array of objects, map name out
+            cleaned[key] = value.map(item => item?.name)
+          }
+        }
+        else if (value?.name) {
+          // if object with name, just return name
+          cleaned[key] = value.name
+        }
+      }
+      return cleaned
+    }
+
+    // gql helpers
     const callGQL = (query, variables = {}) =>
       fetch(env.STASH_URL, {
         method: 'POST',
@@ -270,6 +150,125 @@ export default {
         await callGQL(`mutation { reloadScrapers }`)
       } else {
         console.log("Scrapers already up to date")
+      }
+    }
+
+    const getJobStatus = async (jobId) =>
+      callGQL(`query ($id: ID!) {
+        findJob(input: { id: $id }) {
+          status
+        }}`, { id: jobId })
+
+    const awaitJobFinished = async (jobId) =>
+      new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+          const status = await getJobStatus(jobId)
+            .then(data => data.findJob?.status)
+          console.log(`Job status: ${status}`)
+          if (status === 'FINISHED') {
+            clearInterval(interval)
+            resolve(true)
+          } else if (status === 'FAILED') {
+            clearInterval(interval)
+            reject(new Error('Job failed'))
+          }
+        }, 100)
+      })
+
+    const installPackage = (id) => callGQL(`mutation ($id: String!) {
+      installPackages(
+        packages: {
+          id: $id,
+          sourceURL: "https://stashapp.github.io/CommunityScrapers/stable/index.yml"
+        } type: Scraper
+      )}`, { id })
+
+    const updateScrapers = async () =>
+      callGQL('mutation { updatePackages(type: Scraper) }')
+        .then(data => data.updatePackages)
+
+    const getStashInfo = async () => callGQL(`
+      query { installedPackages(type: Scraper) {
+        package_id version date
+      } version {
+        version hash
+      }}`)
+
+    const getLogs = async (startTime) => callGQL(`{ logs { time level message } }`)
+      .then(data => data.logs.reverse()) // reverse to get latest first
+      .then(logs => logs.filter(log => new Date(log.time) >= startTime - 2000)) // filter logs after start time
+
+    // runners
+    async function scrape(url, scrapeType) {
+      const queryMap = new Map([
+        ['performer', performerQuery],
+        ['scene', sceneQuery],
+        ['gallery', galleryQuery],
+        ['image', imageQuery],
+        ['group', groupQuery],
+      ])
+      // catch unknown scrape type
+      if (!queryMap.has(scrapeType)) {
+        throw new Error(`Unknown scrape type: ${scrapeType}`)
+      }
+      const queryString = queryMap.get(scrapeType)
+      return callGQL(queryString, { url })
+        .then(data => cleanScrapeResult(data[Object.keys(data)[0]]))
+    }
+
+    async function startScrape(url, scrapeType) {
+      const stashInfo = await getStashInfo()
+      let error, result
+      try {
+        result = await scrape(url, scrapeType)
+      } catch (err) {
+        error = err.message
+        console.error(`Error during scrape: ${err.message}`)
+      }
+      return {
+        result,
+        error,
+        runnerInfo: {
+          url,
+          scrapeType,
+          date: new Date().toISOString(),
+        },
+        stashInfo
+      }
+    }
+
+    // handle url scrapersearch
+    async function scraperSearch(url) {
+      // search in CommunityScrapers
+      const matchedScrapers = await searchScrapers(url)
+      // if no results, return empty array
+      if (matchedScrapers.length === 0) return { "error": "No scrapers found for the provided URL." }
+      // check for existing scrapers
+      const existingScrapers = await callGQL(`query {
+        installedPackages(type: Scraper) { package_id }
+      }`).then(data => data.installedPackages.map(pkg => pkg.package_id))
+      // check against IDs
+      const hasExistingScrapers = matchedScrapers.filter(scraper => existingScrapers.includes(scraper))
+      // if no existing and only one matched, install it
+      if (hasExistingScrapers.length === 0 && matchedScrapers.length === 1) {
+        const scraperId = matchedScrapers[0]
+        console.log(`Installing scraper: ${scraperId}`)
+        return installPackage(scraperId)
+          .then(data => data.installPackages)
+          .then(jobId => awaitJobFinished(jobId))
+          .then(() => ({
+            success: `Scraper ${scraperId} installed successfully.`,
+            id: scraperId
+          }))
+      } else if (matchedScrapers.length > 1 && hasExistingScrapers.length === 0) {
+        // if multiple, don't install
+        return { "error": "Multiple scrapers found for the provided URL. Cowardly refusing to install." }
+      } else if (hasExistingScrapers.length == 1) {
+        // if one existing, return success
+        return {
+          success: `Scraper ${hasExistingScrapers[0]} already installed.`,
+          id: hasExistingScrapers[0]
+        }
       }
     }
     
