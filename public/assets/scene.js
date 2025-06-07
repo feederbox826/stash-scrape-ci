@@ -1,4 +1,4 @@
-function replaceScene(data) {
+function replaceData(data) {
   replaceShared(data)
   // simple replacement
   replaceResult(data.result?.title, 'result-title')
@@ -7,8 +7,8 @@ function replaceScene(data) {
   replaceResult(data.result?.details, 'result-details')
   // complex replacements
   replaceResult(data.result?.performers, "result-performers", data.result?.performers?.join(" | "))
-  replaceResult(data.result?.duration, "result-duration", new Date(data.result?.duration * 1000).toISOString().substring(11, 16).replace("-", ":"))
   replaceResult(data.result?.studio, "result-studio", `${data.result.studio} • ${data.result.date}`)
+  if (data.results?.duration) replaceResult(data.result?.duration, "result-duration", new Date(data.result.duration * 1000).toISOString().substring(11, 16).replace("-", ":"))
 
   // manual replacements
   // add groups

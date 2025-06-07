@@ -1,4 +1,4 @@
-function replaceScene(data) {
+function replaceData(data) {
   replaceShared(data)
   // simple replacement
   replaceResult(data.result?.title, 'result-title')

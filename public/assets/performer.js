@@ -6,7 +6,7 @@ function replaceOrHide(data, elemId, value = null) {
   elem.textContent = value
 }
 
-function replaceScene(data) {
+function replaceData(data) {
   replaceShared(data)
   // simple replacement
   replaceOrHide(data.result?.name, 'result-name')
