@@ -30,7 +30,9 @@ function replaceData(data) {
 
   // complex replace
   replaceOrHide(data.result?.height, 'result-height', `${data.result?.height}cm`)
-  replaceOrHide(data.result?.aliases, 'result-aliases', data.result?.aliases?.join(", "))
+  if (data.results?.aliases?.[Symbol.iterator]) {
+    replaceOrHide(data.result?.aliases, 'result-aliases', data.result?.aliases?.join(", "))
+  }
 
   // manually override gender SVGs based on map
   const genderSvg = new Map([
