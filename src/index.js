@@ -3,7 +3,7 @@ const helpText = `
 stash-scrape-ci
   / - here
   /api/result/:id - retreive job result
-  /api/run - run a scrape job
+  /api/scrape - run a scrape job
     auth - authorization for the request
     url - the URL to scrape
     scrapeType - the type of scrape (e.g., performer, scene, gallery, image, group)
@@ -280,6 +280,14 @@ export default {
       return new Response(helpText)
     }
     else if (pathname == "/api/update") {
+      // check authentication
+      const body = await request.json()
+      if (body.auth !== env.AUTH_KEY) {
+        return new Response('Unauthorized', {
+          status: 401,
+          headers: { 'Content-Type': 'text/plain' }
+        })
+      }
       checkUpdatePackages(true)
       return new Response('Scrapers updated successfully', {
         status: 200,
@@ -310,7 +318,7 @@ export default {
       })
     }
     // handle new requests
-    else if (pathname.startsWith("/api/run")) {
+    else if (pathname.startsWith("/api/scrape")) {
       console.log("Received scrape request")
       // handle body
       const body = await request.json()

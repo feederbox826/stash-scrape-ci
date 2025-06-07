@@ -13,6 +13,14 @@ function replaceShared(data) {
   const scraperVersion = data.stashInfo.installedPackages.find(pkg => pkg.package_id === data.runnerInfo.scraperId)
   replaceResult(scraperVersion, 'scraper-hash', ` (${scraperVersion?.version})`)
 
+  // if error, show error message
+  if (data.error) {
+    const errorContainer = document.getElementById("error-box")
+    errorContainer.classList.remove("hidden")
+    const errorMessage = document.getElementById("error-text")
+    errorMessage.textContent = data.error
+  }
+
   // add urls
   if (data?.result?.urls?.[Symbol.iterator]) {
     document.getElementById("url-placeholder").remove()
