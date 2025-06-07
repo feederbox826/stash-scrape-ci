@@ -14,7 +14,7 @@ function replaceShared(data) {
   replaceResult(scraperVersion, 'scraper-hash', ` (${scraperVersion?.version})`)
 
   // add urls
-  if (data.result.urls) {
+  if (data?.result?.urls?.[Symbol.iterator]) {
     document.getElementById("url-placeholder").remove()
     const urlContainer = document.getElementById("result-urls")
     for (const newURL of data.result.urls) {

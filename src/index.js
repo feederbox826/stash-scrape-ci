@@ -363,7 +363,7 @@ export default {
         logs,
       }
       // add to cache
-      env.KV_RESULTS.put(jobId, JSON.stringify(cachedResult), { expirationTtl: 7 * 24 * 60 * 60 }) // 7 day TTL
+      await env.KV_RESULTS.put(jobId, JSON.stringify(cachedResult), { expirationTtl: 7 * 24 * 60 * 60 }) // 7 day TTL
       return new Response(JSON.stringify(cachedResult), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
