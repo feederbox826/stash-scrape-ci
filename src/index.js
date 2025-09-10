@@ -51,9 +51,10 @@ export default {
       // check update packages
       await checkUpdatePackages()
       // set start time
+      const startTime = new Date()
       const result = await startScrape(body.url, body.scrapeType)
       // get logs
-      const logs = await getLogs()
+      const logs = await getLogs(startTime)
       const cachedResult = {
         jobId,
         ...result,

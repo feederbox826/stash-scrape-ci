@@ -103,6 +103,7 @@ const getStashInfo = async () => callGQL(`
 // https://github.com/stashapp/stash/blob/12c4e1f61c49cd4e625a62e9bde7df9e02c0c47c/internal/log/logger.go#L113
 export const getLogs = async () => v(`{ logs { time level message } }`)
   .then(data => data.logs.reverse()) // reverse to get latest first
+  .then(logs => logs.filter(log => new Date(log.time) >= startTime - 2000)) // filter logs after start time
 
 // runners
 async function scrape(url, scrapeType) {
