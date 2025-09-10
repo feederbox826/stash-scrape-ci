@@ -72,5 +72,15 @@ function replaceShared(data) {
       logRow.appendChild(logMessage)
       logContainer.appendChild(logRow)
     }
+    // if count is 30, logs were cut off
+    if (data.logs.length === 30) {
+      const logRow = document.createElement("div")
+      logRow.classList = "row"
+      const logMessage = document.createElement("div")
+      logMessage.classList = "col col-sm-12"
+      logMessage.textContent = "Log limit reached (30). Some logs may have been cut off."
+      logRow.appendChild(logMessage)
+      logContainer.appendChild(logRow)
+    }
   }
 }
