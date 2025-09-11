@@ -1,5 +1,3 @@
-import { awaitJobFinished, getExistingScrapers, installPackage } from "./stash-app.js"
-
 // scraper index searcher and installer
 async function searchScrapers(url) {
   // fetch communityScrapers
@@ -14,22 +12,22 @@ async function searchScrapers(url) {
 }
 
 // handle url scrapersearch
-export async function scraperSearch(url) {
+export async function scraperSearch(url, stash) {
   // search in CommunityScrapers
   const matchedScrapers = await searchScrapers(url)
   // if no results, return empty array
   if (matchedScrapers.length === 0) return { "error": "No scrapers found for the provided URL." }
   // check for existing scrapers
-  const existingScrapers = await getExistingScrapers()
+  const existingScrapers = await stash.getExistingScrapers()
   // check against IDs
   const hasExistingScrapers = matchedScrapers.filter(scraper => existingScrapers.includes(scraper))
   // if no existing and only one matched, install it
   if (hasExistingScrapers.length === 0 && matchedScrapers.length === 1) {
     const scraperId = matchedScrapers[0]
     console.log(`Installing scraper: ${scraperId}`)
-    return installPackage(scraperId)
+    return stash.installPackage(scraperId)
       .then(data => data.installPackages)
-      .then(jobId => awaitJobFinished(jobId))
+      .then(jobId => stash.awaitJobFinished(jobId))
       .then(() => ({
         success: `Scraper ${scraperId} installed successfully.`,
         id: scraperId

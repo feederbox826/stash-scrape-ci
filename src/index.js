@@ -1,7 +1,6 @@
 // imports 
-import { checkUpdatePackages, getLogs } from "./stash-app.js"
-import { jsonResponse, textResponse } from "./utils.js"
-import { scraperSearch } from "./scraper-index.js"
+import { StashApp } from "./stash-app.js"
+import { jsonResponse, textResponse, genID } from "./utils.js"
 
 // main export
 export default {
@@ -13,7 +12,8 @@ export default {
     else if (pathname == "/api/update") {
       const body = await request.json()
       if (body?.auth !== env.AUTH_KEY) return textResponse('Unauthorized', 401)
-      checkUpdatePackages(true)
+      const stash = new StashApp(env)
+      stash.checkUpdatePackages(true)
       return textResponse('Scrapers updated successfully')
     }
     // return cached responses
@@ -42,19 +42,21 @@ export default {
         return textResponse(`Invalid scrapeType. Valid types are: ${validScrapeTypes.join(', ')}`, 400)
       }
       // validate scraperSearch
-      const searchResult = await scraperSearch(body.url)
+      // set up stash instance
+      const stash = new StashApp(env)
+      const searchResult = await stash.urlSeachScrapers(body.url)
       if (searchResult.error) {
         return textResponse(searchResult.error, 400)
       }
       // process scrape job
       const jobId = genID() // Simulate job ID generation
       // check update packages
-      await checkUpdatePackages()
+      await stash.checkUpdatePackages()
       // set start time
       const startTime = new Date()
-      const result = await startScrape(body.url, body.scrapeType)
+      const result = await stash.startScrape(body.url, body.scrapeType)
       // get logs
-      const logs = await getLogs(startTime)
+      const logs = await stash.getLogs(startTime)
       const cachedResult = {
         jobId,
         ...result,
