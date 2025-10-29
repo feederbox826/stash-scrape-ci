@@ -37,6 +37,10 @@ export class StashApp {
       await this.updateScrapers()
         .then(jobId => this.awaitJobFinished(jobId))
         .then(() => this.KV_CONFIG.put("scraperUpdated", true, { expirationTtl: 24 * 60 * 60 }))
+      // update user agent
+      const userAgent = await getChromeUA()
+      console.log(`Updating scraper user-agent to: ${userAgent}`)
+      await this.updateUA(userAgent)
       console.log("Scrapers updated")
       // reload scrapers
       await this.callGQL(`mutation { reloadScrapers }`)
@@ -88,6 +92,10 @@ export class StashApp {
   getLogs = async (startTime) => this.callGQL(`{ logs { time level message } }`)
     .then(data => data.logs.reverse()) // reverse to get latest first
     .then(logs => logs.filter(log => new Date(log.time) >= startTime - 2000)) // filter logs after start time
+
+  updateUA = async (userAgent) => this.callGQL(`mutation ($userAgent: String!) {
+    configureScraping(input: { scraperUserAgent: $userAgent })
+    { scraperUserAgent }}`, { userAgent })
 
   scrape(url, scrapeType) {
     const queryMap = new Map([
@@ -154,6 +162,11 @@ function cleanScrapeResult(result) {
   return cleaned
 }
 
+// get chrome useragent
+const getChromeUA = () =>
+  fetch("https://jnrbsn.github.io/user-agents/user-agents.json")
+    .then(res => res.json())
+    .then(userAgents => userAgents[3])
 
 // static query definitions
 const performerQuery = `query ($url: String!) {
