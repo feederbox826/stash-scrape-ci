@@ -21,7 +21,7 @@ variable "BUILD_DATE" {
 
 // targets
 target "default" {
-  context = "."
+  context = "docker"
   platforms = ["linux/amd64", "linux/arm64"]
   attest = [{
       type = "provenance"
@@ -33,7 +33,7 @@ target "default" {
     BUILD_DATE = BUILD_DATE,
     SHORT_BUILD_DATE = SHORT_BUILD_DATE,
   }
-  dockerfile = "stash-scrape/Dockerfile"
+  dockerfile = "docker/Dockerfile"
   tags = [
     "ghcr.io/${OWNER_NAME}/${IMAGE_NAME}:latest"
   ]
