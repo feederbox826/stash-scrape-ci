@@ -33,7 +33,6 @@ target "default" {
     BUILD_DATE = BUILD_DATE,
     SHORT_BUILD_DATE = SHORT_BUILD_DATE,
   }
-  dockerfile = "docker/Dockerfile"
   tags = [
     "ghcr.io/${OWNER_NAME}/${IMAGE_NAME}:latest"
   ]
