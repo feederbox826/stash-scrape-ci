@@ -1,0 +1,5 @@
+#!/bin/sh
+export STASH_API_KEY="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiJzdGFzaC1zY3JhcGUtY2kiLCJpYXQiOjE3NjI4MTkyMDAsInN1YiI6IkFQSUtleSJ9.NjJLfLk9u72pbGLfYYgoDJrBhzF-xneRMT4i4yiK1a8"
+export STASH_USERNAME="stash-scrape-ci"
+export STASH_JWT_SECRET_KEY="9a1005bf5a7ee68c6b45790ec63710dea5122e3f4c456fd33c03bc365f45f4dc"
+export STASH_PASSWORD='$2a$04$tIDfSLJ2NVhe4mmk8hemE.qZVKwzgtsOSR4dbmtcrojoV9xD3dIZm' # hunter2

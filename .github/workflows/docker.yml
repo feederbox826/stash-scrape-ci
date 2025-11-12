@@ -20,7 +20,7 @@ jobs:
       - id: meta
         name: set meta environment variables
         run: |
-          echo "EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+          echo "EPOCH=1762819200 >> $GITHUB_ENV
           echo "TIMESTAMP=$(git log -1 --pretty=%cI)" >> $GITHUB_OUTPUT
       # set up qemu and buildx
       - uses: docker/setup-qemu-action@v3

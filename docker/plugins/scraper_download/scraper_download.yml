@@ -1,0 +1,10 @@
+name: Scraper Download
+description: Scraper downloader
+version: 0.0.1
+exec:
+  - sh
+  - "{pluginDir}/scraper_download.sh"
+interface: raw
+tasks:
+  - name: Scraper install
+    description: Scraper unzip and install
