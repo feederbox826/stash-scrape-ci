@@ -1,6 +1,6 @@
 // imports 
 import { StashApp } from "./stash-app.js"
-import { jsonResponse, textResponse, genID } from "./utils.js"
+import { jsonResponse, textResponse, genID, helpText } from "./utils.js"
 
 // main export
 export default {
@@ -13,6 +13,7 @@ export default {
       const body = await request.json()
       if (body?.auth !== env.AUTH_KEY) return textResponse('Unauthorized', 401)
       const stash = new StashApp(env)
+      stash.migrateDatabase()
       stash.checkUpdatePackages(true)
       return textResponse('Scrapers updated successfully')
     }

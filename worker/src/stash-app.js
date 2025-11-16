@@ -97,6 +97,10 @@ export class StashApp {
     configureScraping(input: { scraperUserAgent: $userAgent })
     { scraperUserAgent }}`, { userAgent })
 
+  migrateDatabase = async () => this.callGQL(`mutation {
+    migrate(input: { backupPath: "/dev/null" })
+  }`)
+
   scrape(url, scrapeType) {
     const queryMap = new Map([
       ['performer', performerQuery],

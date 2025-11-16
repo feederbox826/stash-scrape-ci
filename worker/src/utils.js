@@ -11,6 +11,7 @@ stash-scrape-ci
     scrapeType - the type of scrape (e.g., performer, scene, gallery, image, group)
   /api/update - force update scrapersv
 
+  /submit - submit a new scrape job
   /scene?id=:id - view scene result
   /performer?id=:id - view performer result
   /gallery?id=:id - view gallery result
