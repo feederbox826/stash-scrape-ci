@@ -1,25 +1,33 @@
 {
-  "$schema": "worker/node_modules/wrangler/config-schema.json",
-  "name": "stash-scrape-ci",
-  "main": "worker/src/index.js",
-  "compatibility_date": "2025-06-07",
-  "preview_urls": false,
-  "kv_namespaces": [
-    {
-      "binding": "KV_RESULTS",
-      "id": "f59568763cb547bbbccbfab3eb65d0b4"
-    },
-    {
-      "binding": "KV_CONFIG",
-      "id": "bb59f35fbba641bb9dc39f214e21b8f8"
-    }
-  ],
-  "assets": {
-    "directory": "worker/public",
-    "binding": "ASSETS"
-  },
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1
-  }
+	"$schema": "worker/node_modules/wrangler/config-schema.json",
+	"name": "stash-scrape-ci",
+	"main": "worker/src/index.js",
+	"compatibility_date": "2025-06-07",
+	"preview_urls": false,
+	"kv_namespaces": [
+		{
+			"binding": "KV_RESULTS",
+			"id": "f59568763cb547bbbccbfab3eb65d0b4"
+		},
+		{
+			"binding": "KV_CONFIG",
+			"id": "bb59f35fbba641bb9dc39f214e21b8f8"
+		}
+	],
+	"assets": {
+		"directory": "worker/public",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1
+	},
+	"d1_databases": [
+		{
+			"binding": "prod_tag_alias",
+			"database_name": "prod-tag-alias",
+			"database_id": "b53ef01a-bf6f-4b2f-975a-a5f60e2b070d",
+			"remote": true
+		}
+	]
 }

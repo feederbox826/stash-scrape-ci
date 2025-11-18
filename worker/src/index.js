@@ -1,5 +1,5 @@
 // imports 
-import { StashApp } from "./stash-app.js"
+import { StashApp, parseTags } from "./stash-app.js"
 import { jsonResponse, textResponse, genID, helpText } from "./utils.js"
 
 // main export
@@ -58,9 +58,15 @@ export default {
       const result = await stash.startScrape(body.url, body.scrapeType)
       // get logs
       const logs = await stash.getLogs(startTime)
+      // replace tags with parsed tags
+      const parsedTags = await parseTags(result.result?.tags || [], env.prod_tag_alias)
       const cachedResult = {
         jobId,
         ...result,
+        result: {
+          ...result.result,
+          tags: parsedTags,
+        },
         runnerInfo: {
           scraperId: searchResult?.id || null,
           ...result.runnerInfo

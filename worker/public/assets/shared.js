@@ -39,16 +39,38 @@ function replaceShared(data) {
   }
 
   // add tags
-  const tagContainer = document.getElementById("tag-list")
-  if (data.result?.tags?.[Symbol.iterator]) {
-    document.getElementById("tag-placeholder").remove()
-    for (const tag of data.result?.tags) {
+  if (!data.result?.tags?.[Symbol.iterator]) return
+  // seperate linked and unlinked tags
+  const linkedTags = data.result?.tags.filter(tag => tag.id)
+  const unlinkedTags = data.result?.tags.filter(tag => !tag.id)
+  // unlinked tags
+  const unlinkedTagContainer = document.getElementById("unlinked-tag-list")
+  if (unlinkedTags.length) {
+    document.getElementById("unlinked-tag-placeholder").remove()
+    for (const tag of unlinkedTags) {
       const newTagLi = document.createElement("li")
       const newTagSpan = document.createElement("span")
       newTagSpan.classList = "tag-item badge bg-none"
       newTagLi.appendChild(newTagSpan)
-      newTagSpan.textContent = tag
-      tagContainer.appendChild(newTagLi)
+      newTagSpan.textContent = tag.name
+      unlinkedTagContainer.appendChild(newTagLi)
+    }
+  }
+  // linked tags
+  const linkedTagContainer = document.getElementById("linked-tag-list")
+  if (linkedTags.length) {
+    document.getElementById("link-tag-placeholder").remove()
+    for (const tag of linkedTags) {
+      const newTagLi = document.createElement("li")
+      const newTagSpan = document.createElement("a")
+      newTagSpan.classList = "tag-item badge bg-none"
+      newTagLi.appendChild(newTagSpan)
+      newTagSpan.textContent = `🔗 ${tag.name}`
+      // set href and link icon
+      newTagSpan.href = `https://stashdb.org/tags/${tag.id}` // adjust base URL as needed
+      newTagSpan.target = "_blank"
+      newTagSpan.rel = "noopener noreferrer"
+      linkedTagContainer.appendChild(newTagLi)
     }
   }
 

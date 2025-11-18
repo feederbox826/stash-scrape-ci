@@ -142,6 +142,23 @@ export class StashApp {
   urlSeachScrapers = async (url) => scraperSearch(url, this)
 }
 
+export async function parseTags(tags, d1) {
+  const parsedTags = tags.map(async tag => {
+    const { results } = await d1.prepare(
+      "SELECT id, search_term FROM tag_search WHERE search_term = ?"
+    )
+      .bind(tag.toLowerCase())
+      .run()
+    if (results.length > 0) {
+      return { id: results[0].id, name: tag }
+    } else {
+      return { name: tag}
+    }
+  })
+  // wait for all tags to be processed
+  return Promise.all(parsedTags)
+}
+
 // generic helpers
 function cleanScrapeResult(result) {
   const cleaned = {}
