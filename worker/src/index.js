@@ -8,7 +8,7 @@ export default {
     // main request handler
     const { pathname } = new URL(request.url)
     // if OPTIONS, return cors
-    if (request.method === 'OPTIONS') return corsResponse
+    if (request.method === 'OPTIONS') return corsResponse()
     // default
     if (pathname === '/api') return textResponse(helpText)
     else if (pathname == "/api/update") {

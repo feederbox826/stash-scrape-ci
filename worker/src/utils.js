@@ -29,7 +29,7 @@ export const genID = (len = 8) => {
   return result
 }
 
-export const corsResponse = new Response('', { headers: corsHeaders })
+export const corsResponse = () => new Response('', { headers: corsHeaders })
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
