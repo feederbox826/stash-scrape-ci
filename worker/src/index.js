@@ -7,6 +7,15 @@ export default {
   async fetch(request, env, ctx) {
     // main request handler
     const { pathname } = new URL(request.url)
+    // if OPTIONS, return cors
+    if (request.method === 'OPTIONS') {
+      return new Response('', {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        },
+      })
+    }
     // default
     if (pathname === '/api') return textResponse(helpText)
     else if (pathname == "/api/update") {
