@@ -29,13 +29,20 @@ export const genID = (len = 8) => {
   return result
 }
 
+export const corsResponse = new Response('', { headers: corsHeaders })
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+}
+
 // response helpers
 export const textResponse = (text, status = 200) => new Response(text, {
   status,
-  headers: { 'Content-Type': 'text/plain' }
+  headers: { 'Content-Type': 'text/plain', ...corsHeaders }
 })
 
 export const jsonResponse = (obj, status = 200) => new Response(JSON.stringify(obj), {
   status,
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json', ...corsHeaders }
 })

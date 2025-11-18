@@ -1,6 +1,6 @@
 // imports 
 import { StashApp, parseTags } from "./stash-app.js"
-import { jsonResponse, textResponse, genID, helpText } from "./utils.js"
+import { corsResponse, jsonResponse, textResponse, genID, helpText } from "./utils.js"
 
 // main export
 export default {
@@ -8,14 +8,7 @@ export default {
     // main request handler
     const { pathname } = new URL(request.url)
     // if OPTIONS, return cors
-    if (request.method === 'OPTIONS') {
-      return new Response('', {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        },
-      })
-    }
+    if (request.method === 'OPTIONS') return corsResponse
     // default
     if (pathname === '/api') return textResponse(helpText)
     else if (pathname == "/api/update") {
