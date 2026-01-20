@@ -48,7 +48,7 @@ export default {
       // set up stash instance
       const stash = new StashApp(env)
       const searchResult = await stash.urlSeachScrapers(body.url)
-      if (searchResult.error) {
+      if (searchResult?.error) {
         return textResponse(searchResult.error, 400)
       }
       // process scrape job
