@@ -30,7 +30,7 @@ export class StashApp {
     }}`)
 
   checkUpdatePackages = async (force = false) => {
-    const lastUpdate = await this.KV_CONFIG.get("scraperLastUpdate")
+    const lastUpdate = await this.KV_CONFIG.get("scraperUpdated")
     // check if key exists
     if (force || !lastUpdate) {
       console.log("Updating scrapers...")
