@@ -10,8 +10,8 @@ function replaceShared(data) {
   setUrl("scrape-url", data.runnerInfo.url)
   setUrl("job-id", `https://scrape.feederbox.cc/${data.runnerInfo.scrapeType}?id=${data.jobId}`, data.jobId)
   // manual replacements
-  const scraperVersion = data.stashInfo.installedPackages.find(pkg => pkg.package_id === data.runnerInfo.scraperId)
-  setUrl("scraper-hash", `https://github.com/stashapp/CommunityScrapers/commit/${scraperVersion?.version}`, ` (${scraperVersion?.version})`)
+  const scraperVersion = data.runnerInfo?.scraperVersion
+  setUrl("scraper-hash", `https://github.com/stashapp/CommunityScrapers/commit/${scraperVersion}`, ` (${scraperVersion})`)
 
   // if error, show error message
   if (data.error) {

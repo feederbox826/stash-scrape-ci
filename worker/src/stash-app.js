@@ -23,9 +23,7 @@ export class StashApp {
       })
   
   getStashInfo = async () => this.callGQL(`
-    query { installedPackages(type: Scraper) {
-      package_id version date
-    } version {
+    query { version {
       version hash
     }}`)
 
@@ -140,6 +138,14 @@ export class StashApp {
   }
 
   urlSeachScrapers = async (url) => scraperSearch(url, this)
+
+  getPkgVersion = async (id) => this.callGQL(`query {
+    installedPackages(type: Scraper) {
+      package_id version
+    }}`).then(data => {
+      const pkg = data.installedPackages.find(pkg => pkg.package_id === id)
+      return pkg ? pkg.version : null
+  })
 }
 
 export async function parseTags(tags, d1) {

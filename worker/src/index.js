@@ -62,6 +62,8 @@ export default {
       const logs = await stash.getLogs(startTime)
       // replace tags with parsed tags
       const parsedTags = await parseTags(result.result?.tags || [], env.prod_tag_alias)
+      // get package version
+      const scraperVersion = await stash.getPkgVersion(searchResult?.id)
       const cachedResult = {
         jobId,
         ...result,
@@ -71,6 +73,7 @@ export default {
         },
         runnerInfo: {
           scraperId: searchResult?.id || null,
+          scraperVersion,
           ...result.runnerInfo
         },
         logs,
