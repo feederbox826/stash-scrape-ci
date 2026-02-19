@@ -1,4 +1,5 @@
 import { scraperSearch } from "./scraper-index"
+import { genID } from "./utils"
 
 export class StashApp {
   constructor(env) {
@@ -96,7 +97,7 @@ export class StashApp {
     { scraperUserAgent }}`, { userAgent })
 
   migrateDatabase = async () => this.callGQL(`mutation {
-    migrate(input: { backupPath: "/dev/null" })
+    migrate(input: { backupPath: "/config/${genID()}-migration.sqlite" })
   }`)
 
   scrape(url, scrapeType) {
